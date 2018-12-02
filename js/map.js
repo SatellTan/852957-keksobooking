@@ -210,16 +210,16 @@ mapPinMain.addEventListener('mouseup', function () {
   }
 });
 
-var onMapPinClick = function () {
+var onMapPinClick = function (evt) {
   // Найти в массиве элемент, соответствующий вызвавшей обработчик метке
   for (var j = 0; j < offers.length; j++) {
     var pinLeft = (offers[j].location.x - MAP_PIN_WIDTH / 2) + 'px';
     var pinTop = (offers[j].location.y - MAP_PIN_HEIGTH) + 'px';
 
-    if (this.style.left === pinLeft && this.style.top === pinTop) {
+    if (evt.currentTarget.style.left === pinLeft && evt.currentTarget.style.top === pinTop) {
       closePopup(); // закрыть уже имеющуюся карточку, если она отображена
 
-      this.classList.add('.map__pin--active');
+      evt.currentTarget.classList.add('.map__pin--active');
       mapBlock.insertBefore(fillingCard(offers[j]), mapFiltersContainer);
       mapBlock.addEventListener('keydown', onPopupEscPress);
 
@@ -229,8 +229,8 @@ var onMapPinClick = function () {
         closePopup();
       });
 
-      popupClose.addEventListener('keydown', function (evt) {
-        if (evt.keyCode === ENTER_KEYCODE) {
+      popupClose.addEventListener('keydown', function (e) {
+        if (e.keyCode === ENTER_KEYCODE) {
           closePopup();
         }
       });
