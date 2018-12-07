@@ -1,6 +1,8 @@
 'use strict';
 
 var OFFERS_NUMBER = 8;
+// var MAP_PIN_MAIN_LEFT = 570;
+// var MAP_PIN_MAIN_TOP = 375;
 var MAP_PIN_WIDTH = 50;
 var MAP_PIN_HEIGTH = 70;
 var ESC_KEYCODE = 27;
@@ -199,30 +201,81 @@ var addressUpdate = function (x, y) {
 // установка изначального адреса главной метки
 addressUpdate(Math.round(mapPinMain.offsetLeft + mapPinMain.offsetWidth / 2), Math.round(mapPinMain.offsetTop + mapPinMain.offsetHeight / 2));
 
-mapPinMain.addEventListener('mouseup', function (evt) {
-  if (mapBlock.classList.contains('map--faded')) { // активация карты и первоначальные настройки
-    mapBlock.classList.remove('map--faded');
-    form.classList.remove('ad-form--disabled');
-    for (i = 0; i < formElements.length; i++) {
-      formElements[i].disabled = false;
-    }
-    addressField.disabled = true;
-    mapPins.appendChild(fillingBlock(offers));
+// drag&drop главной метки
+mapPinMain.addEventListener('mousedown', function (evt) {
 
-    // добавить обработчик события клика на каждую метку, кроме главной
-    var mapPin = document.querySelectorAll('.map__pin');
-    for (i = 0; i < mapPin.length; i++) {
-      if (!mapPin[i].classList.contains('map__pin--main')) {
-        mapPin[i].addEventListener('click', onMapPinClick);
+  var startCoords = {
+    x: evt.clientX,
+    y: evt.clientY
+  };
+
+  var maxPositionX = mapBlock.clientWidth - mapPinMain.offsetWidth;
+  var minPositionX = 0;
+  var maxPositionY = 630 - mapPinMain.offsetHeight;
+  var minPositionY = 130 - mapPinMain.offsetHeight;
+
+  var onMapPinMainMouseMove = function (moveEvt) {
+    moveEvt.preventDefault();
+
+    var delta = {
+      x: startCoords.x - moveEvt.clientX,
+      y: startCoords.y - moveEvt.clientY
+    };
+
+    startCoords = {
+      x: moveEvt.clientX,
+      y: moveEvt.clientY
+    };
+
+    var NewTop = mapPinMain.offsetTop - delta.y;
+    var NewLeft = mapPinMain.offsetLeft - delta.x;
+
+    if (NewLeft <= minPositionX) {
+      NewLeft = minPositionX;
+    } else if (NewLeft >= maxPositionX) {
+      NewLeft = maxPositionX;
+    }
+
+    if (NewTop <= minPositionY) {
+      NewTop = minPositionY;
+    } else if (NewTop >= maxPositionY) {
+      NewTop = maxPositionY;
+    }
+
+    mapPinMain.style.top = NewTop + 'px';
+    mapPinMain.style.left = NewLeft + 'px';
+    addressUpdate(Math.round(mapPinMain.offsetLeft + mapPinMain.offsetWidth / 2), Math.round(mapPinMain.offsetTop + mapPinMain.offsetHeight));
+  };
+
+  var onMapPinMainMouseUp = function () {
+    if (mapBlock.classList.contains('map--faded')) { // активация карты и первоначальные настройки
+      mapBlock.classList.remove('map--faded');
+      form.classList.remove('ad-form--disabled');
+      for (i = 0; i < formElements.length; i++) {
+        formElements[i].disabled = false;
+      }
+      addressField.readOnly = true;
+      mapPins.appendChild(fillingBlock(offers));
+
+      // добавить обработчик события клика на каждую метку, кроме главной
+      var mapPin = document.querySelectorAll('.map__pin');
+      for (i = 0; i < mapPin.length; i++) {
+        if (!mapPin[i].classList.contains('map__pin--main')) {
+          mapPin[i].addEventListener('click', onMapPinClick);
+        }
       }
     }
-  }
 
-  if (evt.currentTarget.classList.contains('map__pin--main')) {
-    addressUpdate(Math.round(evt.currentTarget.offsetLeft + evt.currentTarget.offsetWidth / 2), Math.round(evt.currentTarget.offsetTop + evt.currentTarget.offsetHeight));
-  }
+    addressUpdate(Math.round(mapPinMain.offsetLeft + mapPinMain.offsetWidth / 2), Math.round(mapPinMain.offsetTop + mapPinMain.offsetHeight));
+    document.removeEventListener('mousemove', onMapPinMainMouseMove);
+    document.removeEventListener('mouseup', onMapPinMainMouseUp);
+  };
+
+  document.addEventListener('mousemove', onMapPinMainMouseMove);
+  document.addEventListener('mouseup', onMapPinMainMouseUp);
 });
 
+// Работа с карточкой метки
 var onMapPinClick = function (evt) {
   closePopup(); // закрыть уже имеющуюся карточку, если она отображена
 
@@ -244,9 +297,9 @@ var onMapPinClick = function (evt) {
 };
 
 var closePopup = function () {
-  var PopupElement = document.querySelector('.map__card');
-  if (PopupElement) {
-    PopupElement.parentNode.removeChild(PopupElement);
+  var popupElement = document.querySelector('.map__card');
+  if (popupElement) {
+    popupElement.parentNode.removeChild(popupElement);
   }
   mapBlock.removeEventListener('keydown', onPopupEscPress);
 
@@ -311,10 +364,6 @@ var changeRoomNumber = function () {
   capacityValidationCheck();
 };
 
-capacityField.addEventListener('change', function () {
-  capacityValidationCheck();
-});
-
 var capacityValidationCheck = function () {
   if (capacityField[capacityField.selectedIndex].disabled) {
     capacityField.setCustomValidity('В поле «Количество мест» установлено неверное значение');
@@ -327,8 +376,9 @@ timeOutField.addEventListener('change', changeTimeOut);
 timeInField.addEventListener('change', changeTimeIn);
 typeOfHousingField.addEventListener('change', changeTypeOfHousing);
 roomNumberField.addEventListener('change', changeRoomNumber);
+capacityField.addEventListener('change', capacityValidationCheck);
 
-priceInputField.addEventListener('invalid', function (evt) {
+priceInputField.addEventListener('input', function (evt) {
   if (evt.currentTarget.validity.rangeUnderflow) {
     evt.currentTarget.setCustomValidity('Для данного выбранного типа жилья цена не должна быть ниже ' + evt.currentTarget.min + ' руб.');
   } else {
