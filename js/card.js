@@ -4,7 +4,7 @@
 
   var cardTemplate = document.querySelector('#card').content.querySelector('.map__card');
 
-  var TypesMap = {
+  var typesMap = {
     'flat': 'Квартира',
     'bungalo': 'Бунгало',
     'house': 'Дом',
@@ -32,7 +32,7 @@
     cardElement.querySelector('.popup__title').textContent = arrayItem.offer.title;
     cardElement.querySelector('.popup__text--address').textContent = arrayItem.offer.address;
     cardElement.querySelector('.popup__text--price').textContent = arrayItem.offer.price + '₽/ночь';
-    cardElement.querySelector('.popup__type').textContent = TypesMap[arrayItem.offer.type];
+    cardElement.querySelector('.popup__type').textContent = typesMap[arrayItem.offer.type];
     cardElement.querySelector('.popup__text--capacity').textContent = interpretationRooms(arrayItem.offer.rooms) + interpretationGuests(arrayItem.offer.guests);
     cardElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + arrayItem.offer.checkin + ', выезд до ' + arrayItem.offer.checkout;
     cardElement.querySelector('.popup__description').textContent = arrayItem.offer.description;
@@ -47,18 +47,32 @@
     photosBlock.removeChild(photosBlockChild); // удаление первого шаблонного элемента с пустым фото
 
     var featuresBlock = cardElement.querySelector('.popup__features');
-    var children = featuresBlock.children;
+    renderCardFeatures(arrayItem.offer.features, featuresBlock);
 
-    for (i = children.length - 1; i >= arrayItem.offer.features.length; i--) {
-      var child = children[i];
-      child.parentElement.removeChild(child);
+    function renderCardFeatures(featuresList, block) {
+      if (featuresList.length > 0) {
+        var fragment = document.createDocumentFragment();
+
+        while (block.firstChild) {
+          block.firstChild.remove();
+        }
+
+        featuresList.forEach(function (feature) {
+          var featureElement = document.createElement('li');
+          featureElement.classList.add('feature', 'feature--' + feature);
+          fragment.appendChild(featureElement);
+        });
+
+        block.appendChild(fragment);
+      } else {
+        block.remove();
+      }
     }
-
     return cardElement;
   };
 
   window.card = {
-    renderCard: renderCard
+    render: renderCard
   };
 
 })();

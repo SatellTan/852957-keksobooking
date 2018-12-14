@@ -8,13 +8,13 @@
   var MIN_PALACE_PRICE = 10000;
 
   var form = document.querySelector('.ad-form');
-  var addressField = form.querySelector('#address');
   var timeInField = form.querySelector('#timein');
   var timeOutField = form.querySelector('#timeout');
   var typeOfHousingField = form.querySelector('#type');
   var priceInputField = form.querySelector('#price');
   var roomNumberField = form.querySelector('#room_number');
   var capacityField = form.querySelector('#capacity');
+  var main = document.querySelector('main');
 
   var changeTimeOut = function () {
     timeInField.options[timeInField.selectedIndex].selected = false;
@@ -86,9 +86,50 @@
     }
   });
 
-  window.form = {
-    addressField: addressField,
-    form: form
+
+  // Загрузка данных
+  var onError = function () {
+    var errorMessageElement = document.querySelector('#error').content.querySelector('.error').cloneNode(true);
+    main.insertBefore(errorMessageElement, main.firstChild);
+
+    // Сообщение удаляется по клику или по Esc
+    errorMessageElement.addEventListener('click', function (evt) {
+      evt.currentTarget.remove();
+    });
+
+    var onMessageEscPress = function (evt) {
+      window.util.isEscEvent(evt, function () {
+        errorMessageElement.remove();
+        errorMessageElement.removeEventListener('keydown', onMessageEscPress);
+      });
+    };
+
+    errorMessageElement.addEventListener('keydown', onMessageEscPress);
   };
+
+  var onPostSuccess = function () {
+    window.map.activate(false);
+    var successMessageElement = document.querySelector('#success').content.querySelector('.success').cloneNode(true);
+    main.insertBefore(successMessageElement, main.firstChild);
+
+    // Сообщение удаляется по клику или по Esc
+    successMessageElement.addEventListener('click', function (evt) {
+      evt.currentTarget.remove();
+    });
+
+    var onMessageEscPress = function (evt) {
+      window.util.isEscEvent(evt, function () {
+        successMessageElement.remove();
+        main.removeEventListener('keydown', onMessageEscPress);
+      });
+    };
+
+    main.addEventListener('keydown', onMessageEscPress);
+  };
+
+  form.addEventListener('submit', function (evt) {
+    evt.preventDefault();
+    window.backend.save(new FormData(form), onPostSuccess, onError);
+  });
 
 })();
