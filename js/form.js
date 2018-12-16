@@ -2,8 +2,8 @@
 
 (function () {
 
-  var MIN_FLAT_PRICE = 1000;
   var MIN_BUNGALO_PRICE = 0;
+  var MIN_FLAT_PRICE = 1000;
   var MIN_HOUSE_PRICE = 5000;
   var MIN_PALACE_PRICE = 10000;
 
@@ -26,21 +26,16 @@
     timeOutField.options[timeInField.selectedIndex].selected = true;
   };
 
+  var typesMap = {
+    0: MIN_BUNGALO_PRICE,
+    1: MIN_FLAT_PRICE,
+    2: MIN_HOUSE_PRICE,
+    3: MIN_PALACE_PRICE
+  };
+
   var changeTypeOfHousing = function () {
-    switch (typeOfHousingField.selectedIndex) {
-      case 0 : priceInputField.setAttribute('min', MIN_BUNGALO_PRICE);
-        priceInputField.setAttribute('placeholder', MIN_BUNGALO_PRICE);
-        break;
-      case 1 : priceInputField.setAttribute('min', MIN_FLAT_PRICE);
-        priceInputField.setAttribute('placeholder', MIN_FLAT_PRICE);
-        break;
-      case 2 : priceInputField.setAttribute('min', MIN_HOUSE_PRICE);
-        priceInputField.setAttribute('placeholder', MIN_HOUSE_PRICE);
-        break;
-      case 3 : priceInputField.setAttribute('min', MIN_PALACE_PRICE);
-        priceInputField.setAttribute('placeholder', MIN_PALACE_PRICE);
-        break;
-    }
+    priceInputField.setAttribute('min', typesMap[typeOfHousingField.selectedIndex]);
+    priceInputField.setAttribute('placeholder', typesMap[typeOfHousingField.selectedIndex]);
   };
 
   var changeRoomNumber = function () {
@@ -90,46 +85,59 @@
   // Загрузка данных
   var onError = function () {
     var errorMessageElement = document.querySelector('#error').content.querySelector('.error').cloneNode(true);
+    var errorButton = errorMessageElement.querySelector('.error__button');
+
     main.insertBefore(errorMessageElement, main.firstChild);
 
-    // Сообщение удаляется по клику или по Esc
-    errorMessageElement.addEventListener('click', function (evt) {
+    errorMessageElement.addEventListener('click', onMessageClick);
+
+    var onErrorButtonClick = function (evt) {
+      evt.currentTarget.removeEventListener('click', onErrorButtonClick);
       evt.currentTarget.remove();
-    });
+    };
+
+    errorButton.addEventListener('click', onErrorButtonClick);
 
     var onMessageEscPress = function (evt) {
-      window.util.isEscEvent(evt, function () {
+      window.utils.isEscEvent(evt, function () {
         errorMessageElement.remove();
-        errorMessageElement.removeEventListener('keydown', onMessageEscPress);
+        document.removeEventListener('keydown', onMessageEscPress);
       });
     };
 
-    errorMessageElement.addEventListener('keydown', onMessageEscPress);
+    document.addEventListener('keydown', onMessageEscPress);
+  };
+
+  var onMessageClick = function (evt) {
+    evt.currentTarget.removeEventListener('click', onMessageClick);
+    evt.currentTarget.remove();
   };
 
   var onPostSuccess = function () {
-    window.map.activate(false);
     var successMessageElement = document.querySelector('#success').content.querySelector('.success').cloneNode(true);
+
+    window.map.activate(false);
     main.insertBefore(successMessageElement, main.firstChild);
 
-    // Сообщение удаляется по клику или по Esc
-    successMessageElement.addEventListener('click', function (evt) {
-      evt.currentTarget.remove();
-    });
+    successMessageElement.addEventListener('click', onMessageClick);
 
     var onMessageEscPress = function (evt) {
-      window.util.isEscEvent(evt, function () {
+      window.utils.isEscEvent(evt, function () {
         successMessageElement.remove();
-        main.removeEventListener('keydown', onMessageEscPress);
+        document.removeEventListener('keydown', onMessageEscPress);
       });
     };
 
-    main.addEventListener('keydown', onMessageEscPress);
+    document.addEventListener('keydown', onMessageEscPress);
   };
 
   form.addEventListener('submit', function (evt) {
     evt.preventDefault();
     window.backend.save(new FormData(form), onPostSuccess, onError);
   });
+
+  window.form = {
+    onError: onError
+  };
 
 })();

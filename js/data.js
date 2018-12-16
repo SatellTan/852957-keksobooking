@@ -4,8 +4,7 @@
 
   var offers = [];
 
-  // Загрузка данных
-  var onError = function (errorMessage) {
+  /* var onError = function (errorMessage) {
     var node = document.createElement('div');
     node.style = 'z-index: 100; margin: 0 auto; text-align: center; background-color: red;';
     node.style.position = 'absolute';
@@ -15,7 +14,7 @@
 
     node.textContent = errorMessage;
     document.body.insertAdjacentElement('afterbegin', node);
-  };
+  };*/
 
   var onGetSuccess = function (dataArray) {
     for (var i = 0; i < dataArray.length; i++) {
@@ -23,7 +22,7 @@
     }
   };
 
-  window.backend.load(onGetSuccess, onError);
+  window.backend.load(onGetSuccess, window.form.onError);
 
 
   window.data = {

@@ -12,6 +12,29 @@
     NOT_FROUND_ERROR: 404,
     SERVER_ERROR: 500
   };
+  var error;
+
+  var processServerResponse = function (xhr, onLoad) {
+    switch (xhr.status) {
+      case Code.SUCCESS:
+        onLoad(xhr.response);
+        break;
+      case Code.BAD_REQUEST:
+        error = 'Неверный запрос';
+        break;
+      case Code.UNAUTHORIZED:
+        error = 'Пользователь не авторизован';
+        break;
+      case Code.NOT_FROUND_ERROR:
+        error = 'Ничего не найдено';
+        break;
+      case Code.SERVER_ERROR:
+        error = 'Внутренняя ошибка сервера';
+        break;
+      default:
+        error = 'Cтатус ответа: : ' + xhr.status + ' ' + xhr.statusText;
+    }
+  };
 
   var save = function (data, onLoad, onError) {
     var xhr = new XMLHttpRequest();
@@ -29,26 +52,9 @@
     });
 
     xhr.addEventListener('load', function () {
-      var error;
-      switch (xhr.status) {
-        case Code.SUCCESS:
-          onLoad(xhr.response);
-          break;
-        case Code.BAD_REQUEST:
-          error = 'Неверный запрос';
-          break;
-        case Code.UNAUTHORIZED:
-          error = 'Пользователь не авторизован';
-          break;
-        case Code.NOT_FROUND_ERROR:
-          error = 'Ничего не найдено';
-          break;
-        case Code.SERVER_ERROR:
-          error = 'Внутренняя ошибка сервера';
-          break;
-        default:
-          error = 'Cтатус ответа: : ' + xhr.status + ' ' + xhr.statusText;
-      }
+      error = '';
+
+      processServerResponse(xhr, onLoad);
 
       if (error) {
         onError(error);
@@ -65,26 +71,9 @@
     xhr.responseType = 'json';
 
     xhr.addEventListener('load', function () {
-      var error;
-      switch (xhr.status) {
-        case Code.SUCCESS:
-          onLoad(xhr.response);
-          break;
-        case Code.BAD_REQUEST:
-          error = 'Неверный запрос';
-          break;
-        case Code.UNAUTHORIZED:
-          error = 'Пользователь не авторизован';
-          break;
-        case Code.NOT_FROUND_ERROR:
-          error = 'Ничего не найдено';
-          break;
-        case Code.SERVER_ERROR:
-          error = 'Внутренняя ошибка сервера';
-          break;
-        default:
-          error = 'Cтатус ответа: : ' + xhr.status + ' ' + xhr.statusText;
-      }
+      error = '';
+
+      processServerResponse(xhr, onLoad);
 
       if (error) {
         onError(error);

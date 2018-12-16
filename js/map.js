@@ -4,6 +4,7 @@
 
   var START_LEFT_MAIN_PIN = '570px';
   var START_TOP_MAIN_PIN = '375px';
+  var PINS_AMOUNT = 5;
 
   var mapBlock = document.querySelector('.map');
   var mapPins = document.querySelector('.map__pins');
@@ -13,15 +14,24 @@
   var form = document.querySelector('.ad-form');
   var addressField = form.querySelector('#address');
   var formReset = form.querySelector('.ad-form__reset');
+  var filtersBlock = document.querySelector('.map__filters');
 
   var fillingBlock = function (array) { // заполнение блока метками
     var fragment = document.createDocumentFragment();
 
-    for (var i = 0; i < array.length; i++) {
+    cleanNode(mapPins, '.map__pin:not(.map__pin--main)'); // очистить карту от возможных старых меток
+    closePopup();
+
+    console.log(array);
+    var num = Math.min(array.length, PINS_AMOUNT);
+
+    for (var i = 0; i < num; i++) {
       if ('offer' in array[i]) {
-        fragment.appendChild(window.pin.render(array[i], i));
+        var ggg = fragment.appendChild(window.pin.render(array[i], i));
+        //console.log(ggg);
       }
     }
+    //console.log(window.data.offers);
 
     return fragment;
   };
@@ -157,7 +167,6 @@
 
     var onMapPinMainMouseUp = function () {
       if (mapBlock.classList.contains('map--faded')) {
-        // активация карты и первоначальные настройки
         activateMap(true);
       }
 
@@ -189,7 +198,7 @@
   };
 
   var onPopupEscPress = function (evt) {
-    window.util.isEscEvent(evt, closePopup);
+    window.utils.isEscEvent(evt, closePopup);
   };
 
   formReset.addEventListener('click', function (evt) {
@@ -199,9 +208,14 @@
 
   // Нажатие enter на главной метке
   mapPinMain.addEventListener('keydown', function (evt) {
-    window.util.isEnterEvent(evt, function () {
+    window.utils.isEnterEvent(evt, function () {
       activateMap(true);
     });
+  });
+
+  filtersBlock.addEventListener('change', function () {
+    //var filteredOffers = window.data.offers.slice();
+    fillingBlock(window.filter(window.data.offers));
   });
 
   window.map = {
