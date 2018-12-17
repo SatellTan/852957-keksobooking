@@ -5,6 +5,9 @@
   var URL_POST = 'https://js.dump.academy/keksobooking';
   var URL_GET = 'https://js.dump.academy/keksobooking/data';
   var TIMEOUT = 10000;
+
+  var error;
+
   var Code = {
     SUCCESS: 200,
     BAD_REQUEST: 400,
@@ -12,7 +15,6 @@
     NOT_FROUND_ERROR: 404,
     SERVER_ERROR: 500
   };
-  var error;
 
   var processServerResponse = function (xhr, onLoad) {
     switch (xhr.status) {

@@ -17,7 +17,6 @@
     pinElement.querySelector('img').setAttribute('src', arrayItem.author.avatar);
     pinElement.setAttribute('data-id', index);
 
-    console.log(pinElement);
     return pinElement;
   };
 

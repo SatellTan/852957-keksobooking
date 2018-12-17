@@ -16,6 +16,20 @@
   var capacityField = form.querySelector('#capacity');
   var main = document.querySelector('main');
 
+  var typesMap = {
+    0: MIN_BUNGALO_PRICE,
+    1: MIN_FLAT_PRICE,
+    2: MIN_HOUSE_PRICE,
+    3: MIN_PALACE_PRICE
+  };
+
+  var roomNumberMap = {
+    0: [2],
+    1: [1, 2],
+    2: [0, 1, 2],
+    3: [3]
+  };
+
   var changeTimeOut = function () {
     timeInField.options[timeInField.selectedIndex].selected = false;
     timeInField.options[timeOutField.selectedIndex].selected = true;
@@ -24,13 +38,6 @@
   var changeTimeIn = function () {
     timeOutField.options[timeOutField.selectedIndex].selected = false;
     timeOutField.options[timeInField.selectedIndex].selected = true;
-  };
-
-  var typesMap = {
-    0: MIN_BUNGALO_PRICE,
-    1: MIN_FLAT_PRICE,
-    2: MIN_HOUSE_PRICE,
-    3: MIN_PALACE_PRICE
   };
 
   var changeTypeOfHousing = function () {
@@ -42,19 +49,15 @@
     for (var i = 0; i < capacityField.length; i++) {
       capacityField[i].disabled = true;
     }
-    switch (roomNumberField.selectedIndex) {
-      case 0 : capacityField[2].disabled = false;
-        break;
-      case 1 : capacityField[1].disabled = false;
-        capacityField[2].disabled = false;
-        break;
-      case 2 : capacityField[0].disabled = false;
-        capacityField[1].disabled = false;
-        capacityField[2].disabled = false;
-        break;
-      case 3 : capacityField[3].disabled = false;
-        break;
-    }
+
+    var unlockCapacityItems = function (selectedI) {
+      var guestsNumber = roomNumberMap[selectedI];
+      for (i = 0; i < guestsNumber.length; i++) {
+        capacityField[guestsNumber[i]].disabled = false;
+      }
+    };
+
+    unlockCapacityItems(roomNumberField.selectedIndex);
 
     capacityValidationCheck();
   };
@@ -81,8 +84,6 @@
     }
   });
 
-
-  // Загрузка данных
   var onError = function () {
     var errorMessageElement = document.querySelector('#error').content.querySelector('.error').cloneNode(true);
     var errorButton = errorMessageElement.querySelector('.error__button');
