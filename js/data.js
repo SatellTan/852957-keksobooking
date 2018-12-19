@@ -5,9 +5,9 @@
   var offers = [];
 
   var onGetSuccess = function (dataArray) {
-    for (var i = 0; i < dataArray.length; i++) {
-      offers[i] = dataArray[i];
-    }
+    dataArray.forEach(function (item, index) {
+      offers[index] = item;
+    });
   };
 
   window.backend.load(onGetSuccess, window.form.onError);

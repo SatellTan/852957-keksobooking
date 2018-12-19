@@ -5,7 +5,9 @@
   var START_LEFT_MAIN_PIN = '570px';
   var START_TOP_MAIN_PIN = '375px';
   var PINS_AMOUNT = 5;
-  var PRICE_INPUT_PLACEHOLDER_DEFAULT = 1000;
+  var PRICE_INPUT_PLACEHOLDER_DEFAULT = '1000';
+  var PRICE_INPUT_MIN_DEFAULT = '1000';
+  var PRICE_INPUT_MAX_DEFAULT = '1000000';
 
   var mapBlock = document.querySelector('.map');
   var mapPins = document.querySelector('.map__pins');
@@ -17,6 +19,8 @@
   var priceInputField = form.querySelector('#price');
   var formReset = form.querySelector('.ad-form__reset');
   var filtersBlock = document.querySelector('.map__filters');
+  var previewAvatar = document.querySelector('.ad-form-header__preview img');
+  var formAvatarDefault = 'img/muffin-grey.svg';
 
   var fillBlock = function (array) { // заполнение блока метками
     var fragment = document.createDocumentFragment();
@@ -57,9 +61,9 @@
   };
 
   var closePopup = function () {
-    var popupElement = document.querySelector('.map__card');
-    if (popupElement) {
-      popupElement.parentNode.removeChild(popupElement);
+    var popupNode = document.querySelector('.map__card');
+    if (popupNode) {
+      popupNode.parentNode.removeChild(popupNode);
     }
     mapBlock.removeEventListener('keydown', onPopupEscPress);
 
@@ -102,9 +106,21 @@
       form.reset();
       filter.reset();
       priceInputField.setAttribute('placeholder', PRICE_INPUT_PLACEHOLDER_DEFAULT);
+      priceInputField.setAttribute('max', PRICE_INPUT_MAX_DEFAULT);
+      priceInputField.setAttribute('min', PRICE_INPUT_MIN_DEFAULT);
       mapPinMain .style.left = START_LEFT_MAIN_PIN;
       mapPinMain.style.top = START_TOP_MAIN_PIN;
       addressUpdate(Math.round(mapPinMain.offsetLeft + mapPinMain.offsetWidth / 2), Math.round(mapPinMain.offsetTop + mapPinMain.offsetHeight / 2));
+
+      previewAvatar.setAttribute('src', formAvatarDefault);
+      var offerPhotos = document.querySelectorAll('.ad-form__photo');
+      for (var i = offerPhotos.length - 1; i >= 1; i--) {
+        offerPhotos[i].parentNode.removeChild(offerPhotos[i]);
+      }
+      var offerPhotoPreview = document.querySelector('.ad-form__photo img');
+      if (offerPhotoPreview) {
+        offerPhotoPreview.parentNode.removeChild(offerPhotoPreview);
+      }
 
       mapBlock.classList.add('map--faded');
       form.classList.add('ad-form--disabled');
@@ -211,6 +227,17 @@
     window.utils.isEnterEvent(evt, function () {
       if (mapBlock.classList.contains('map--faded')) {
         activateMap(true);
+      }
+    });
+  });
+
+  filtersBlock.addEventListener('keydown', function (evt) {
+    window.utils.isEnterEvent(evt, function () {
+      if (evt.target.name === 'features') {
+        evt.target.checked = !evt.target.checked;
+        window.debounce(function () {
+          fillBlock(window.filter(window.data.offers));
+        });
       }
     });
   });
