@@ -8,16 +8,16 @@
   var pinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
 
   var renderPin = function (arrayItem, index) {
-    var pinElement = pinTemplate.cloneNode(true);
+    var pinNode = pinTemplate.cloneNode(true);
     var pinLeft = (arrayItem.location.x - MAP_PIN_WIDTH / 2) + 'px';
     var pinTop = (arrayItem.location.y - MAP_PIN_HEIGTH) + 'px';
 
-    pinElement.setAttribute('style', 'left: ' + pinLeft + '; top: ' + pinTop);
-    pinElement.querySelector('img').setAttribute('alt', arrayItem.offer.title);
-    pinElement.querySelector('img').setAttribute('src', arrayItem.author.avatar);
-    pinElement.setAttribute('data-id', index);
+    pinNode.setAttribute('style', 'left: ' + pinLeft + '; top: ' + pinTop);
+    pinNode.querySelector('img').setAttribute('alt', arrayItem.offer.title);
+    pinNode.querySelector('img').setAttribute('src', arrayItem.author.avatar);
+    pinNode.setAttribute('data-id', index);
 
-    return pinElement;
+    return pinNode;
   };
 
   window.pin = {

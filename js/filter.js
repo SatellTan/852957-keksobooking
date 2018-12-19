@@ -23,23 +23,23 @@
     }
   }
 
-  function filterType(hotel) {
-    return (housingType.value === 'any' || hotel.offer.type === housingType.value);
-  }
+  function filterOffers(hotel) {
 
-  function filterPrice(hotel) {
-    return (housingPrice.value === 'any' || getPriceCategory(hotel.offer.price) === housingPrice.value);
-  }
+    if (!(housingType.value === 'any') && !(hotel.offer.type === housingType.value)) {
+      return false;
+    }
 
-  function filterRooms(hotel) {
-    return (housingRooms.value === 'any' || hotel.offer.rooms === parseInt(housingRooms.value, 10));
-  }
+    if (!(housingPrice.value === 'any') && !(getPriceCategory(hotel.offer.price) === housingPrice.value)) {
+      return false;
+    }
 
-  function filterGuests(hotel) {
-    return (housingGuests.value === 'any' || hotel.offer.guests === parseInt(housingGuests.value, 10));
-  }
+    if (!(housingRooms.value === 'any') && !(hotel.offer.rooms === parseInt(housingRooms.value, 10))) {
+      return false;
+    }
 
-  function filterFeatures(hotel) {
+    if (!(housingGuests.value === 'any') && !(hotel.offer.guests === parseInt(housingGuests.value, 10))) {
+      return false;
+    }
 
     var checkedFeatures = [].map.call(housingFeatures.querySelectorAll('input[name=features]:checked'), function (checkbox) {
       return checkbox.value;
@@ -50,9 +50,8 @@
     });
   }
 
-
   function filterHotels(hotels) {
-    return hotels.filter(filterType).filter(filterPrice).filter(filterRooms).filter(filterGuests).filter(filterFeatures);
+    return hotels.filter(filterOffers);
   }
 
   window.filter = filterHotels;

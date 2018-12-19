@@ -52,9 +52,9 @@
 
     var unlockCapacityItems = function (selectedI) {
       var guestsNumber = roomNumberMap[selectedI];
-      for (i = 0; i < guestsNumber.length; i++) {
-        capacityField[guestsNumber[i]].disabled = false;
-      }
+      guestsNumber.forEach(function (item) {
+        capacityField[item].disabled = false;
+      });
     };
 
     unlockCapacityItems(roomNumberField.selectedIndex);
@@ -85,12 +85,12 @@
   });
 
   var onError = function () {
-    var errorMessageElement = document.querySelector('#error').content.querySelector('.error').cloneNode(true);
-    var errorButton = errorMessageElement.querySelector('.error__button');
+    var errorMessageNode = document.querySelector('#error').content.querySelector('.error').cloneNode(true);
+    var errorButton = errorMessageNode.querySelector('.error__button');
 
-    main.insertBefore(errorMessageElement, main.firstChild);
+    main.insertBefore(errorMessageNode, main.firstChild);
 
-    errorMessageElement.addEventListener('click', onMessageClick);
+    errorMessageNode.addEventListener('click', onMessageClick);
 
     var onErrorButtonClick = function (evt) {
       evt.currentTarget.removeEventListener('click', onErrorButtonClick);
@@ -101,7 +101,7 @@
 
     var onMessageEscPress = function (evt) {
       window.utils.isEscEvent(evt, function () {
-        errorMessageElement.remove();
+        errorMessageNode.remove();
         document.removeEventListener('keydown', onMessageEscPress);
       });
     };
@@ -115,16 +115,16 @@
   };
 
   var onPostSuccess = function () {
-    var successMessageElement = document.querySelector('#success').content.querySelector('.success').cloneNode(true);
+    var successMessageNode = document.querySelector('#success').content.querySelector('.success').cloneNode(true);
 
     window.map.activate(false);
-    main.insertBefore(successMessageElement, main.firstChild);
+    main.insertBefore(successMessageNode, main.firstChild);
 
-    successMessageElement.addEventListener('click', onMessageClick);
+    successMessageNode.addEventListener('click', onMessageClick);
 
     var onMessageEscPress = function (evt) {
       window.utils.isEscEvent(evt, function () {
-        successMessageElement.remove();
+        successMessageNode.remove();
         document.removeEventListener('keydown', onMessageEscPress);
       });
     };
