@@ -37,24 +37,27 @@
 
   fileChooserOfferPhoto.addEventListener('change', function () {
 
-    file = fileChooserOfferPhoto.files[0];
-    var offerPhotos = document.querySelectorAll('.ad-form__photo');
-    var photoItem;
+    for (var i = 0; i < fileChooserOfferPhoto.files.length; i++) {
+      file = fileChooserOfferPhoto.files[i];
 
-    if (offerPhotos[offerPhotos.length - 1].children.length !== 0) {
-      photoItem = document.createElement('div');
-      photoItem.classList.add('ad-form__photo');
-    } else {
-      photoItem = offerPhotos[offerPhotos.length - 1];
+      var offerPhotos = document.querySelectorAll('.ad-form__photo');
+      var photoItem;
+
+      if (offerPhotos[offerPhotos.length - 1].children.length !== 0) {
+        photoItem = document.createElement('div');
+        photoItem.classList.add('ad-form__photo');
+      } else {
+        photoItem = offerPhotos[offerPhotos.length - 1];
+      }
+
+      var photoImg = document.createElement('img');
+      photoImg.setAttribute('width', '70');
+      photoImg.setAttribute('height', '70');
+      insertImg(photoImg);
+
+      photoItem.appendChild(photoImg);
+      offerPhotosContainer.appendChild(photoItem);
     }
-
-    var photoImg = document.createElement('img');
-    photoImg.setAttribute('width', '70');
-    photoImg.setAttribute('height', '70');
-    insertImg(photoImg);
-
-    photoItem.appendChild(photoImg);
-    offerPhotosContainer.appendChild(photoItem);
   });
 
 })();
